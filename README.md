@@ -1,6 +1,6 @@
 ## Codewars Analyze
 
-Codewars Analyze is a small web app built with React and Vite. It allows you to search for a Codewars user and view detailed statistics beyond what's available on the official profile page.
+Codewars Analyze is a small web app built with React and Vite. It allows you to search for a Codewars user and view more detailed data beyond the official profile page. I mainly wanted a heat map to see my progress.
 
 #### Features
 
