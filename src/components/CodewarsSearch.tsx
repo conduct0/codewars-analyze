@@ -227,28 +227,24 @@ function CodewarsSearch() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-lg p-6 text-center">
+                <Card>
                   <CardContent className="flex justify-center flex-col items-center">
-                    <Trophy className="w-8 h-8 text-purple-500 dark:text-purple-400" />
-                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                    <Trophy className="w-8 h-8 " />
+                    <div className="text-3xl font-bold mb-1">
                       {data.leaderboardPosition
                         ? `#${data.leaderboardPosition.toLocaleString()}`
                         : "N/A"}
                     </div>
-                    <div className="text-purple-700 dark:text-purple-300/80 font-medium">
-                      Global Rank
-                    </div>
+                    <div className="font-medium">Global Rank</div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-lg p-6 text-center text-purple-500 dark:text-purple-400">
+                <Card>
                   <CardContent className="flex justify-center flex-col items-center">
-                    <Star className="w-8 h-8 text-purple-500 dark:text-purple-400" />
-                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
+                    <Star className="w-8 h-8" />
+                    <div className="text-3xl font-bold  mb-1">
                       {data.honor?.toLocaleString() || 0}
                     </div>
-                    <div className="text-purple-700 dark:text-purple-300/80 font-medium">
-                      Honor Points
-                    </div>
+                    <div className=" font-medium">Honor Points</div>
                   </CardContent>
                 </Card>
               </div>
