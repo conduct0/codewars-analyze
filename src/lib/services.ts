@@ -68,7 +68,7 @@ export async function fetchAllCompletedChallenges(
       totalItems: firstData.totalItems,
       data: allChallenges.sort(
         (a, b) =>
-          new Date(a.completedAt).getTime() - new Date(b.completedAt).getTime(),
+          new Date(b.completedAt).getTime() - new Date(a.completedAt).getTime(),
       ),
     };
   } catch (error) {

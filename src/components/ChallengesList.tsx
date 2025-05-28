@@ -38,7 +38,6 @@ function CompletedChallenges({ username }: CompletedChallengesProps) {
     enabled: Boolean(username),
     refetchOnWindowFocus: false,
     retry: 2,
-    staleTime: 5 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -60,7 +59,7 @@ function CompletedChallenges({ username }: CompletedChallengesProps) {
   const getLanguageColor = (language: string): string => {
     const colors: Record<string, string> = {
       javascript: "bg-yellow-500",
-      c: "bg-yellow-700",
+      c: "bg-green-700",
       python: "bg-blue-500",
       java: "bg-orange-500",
       ruby: "bg-red-500",
@@ -142,26 +141,29 @@ function CompletedChallenges({ username }: CompletedChallengesProps) {
                 key={challenge.id}
                 className="flex items-center gap-3 p-4 border rounded-lg bg-gray-100 dark:bg-gray-800/50 hover:bg-muted/50 transition-colors"
               >
-                <Code className="w-5 h-5 text-green-600 flex-shrink-0" />
+                <Code className="w-5 h-5 text-purple-800 dark:text-purple-600 flex-shrink-0 hidden md:inline" />
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1 w-100 overflow-scroll">
-                    <h4 className="font-medium truncate">{challenge.name}</h4>
+                  <div className="flex items-center gap-2 mb-1 w-full overflow-auto">
+                    <h4 className="text-start font-medium truncate w-full">
+                      {challenge.name}
+                    </h4>
+                  </div>
+
+                  <div className="flex items-center  flex-row gap-1">
+                    <div className="flex items-center  gap-1 text-xs text-muted-foreground">
+                      <Calendar className="w-3 h-3" />
+                      {formatDate(challenge.completedAt)}
+                    </div>
                     {challenge.completedLanguages &&
                       challenge.completedLanguages.length > 0 &&
                       challenge.completedLanguages.map((lang) => (
                         <Badge
-                          variant="secondary"
                           className={`${getLanguageColor(lang)} text-white text-xs`}
                         >
                           {lang}
                         </Badge>
                       ))}
-                  </div>
-
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Calendar className="w-3 h-3" />
-                    {formatDate(challenge.completedAt)}
                   </div>
                 </div>
 
@@ -188,7 +190,30 @@ function CompletedChallenges({ username }: CompletedChallengesProps) {
         )}
 
         {totalDisplayPages > 1 && (
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center justify-center pt-4 border-t flex-wrap gap-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => p - 1)}
+                disabled={!hasPrevPage}
+              >
+                Prev
+              </Button>
+
+              <span className="text-sm text-muted-foreground px-2">
+                Page {currentPage + 1} of {totalDisplayPages}
+              </span>
+
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => p + 1)}
+                disabled={!hasNextPage}
+              >
+                Next
+              </Button>
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-muted-foreground">Show</span>
               <Select
@@ -207,30 +232,6 @@ function CompletedChallenges({ username }: CompletedChallengesProps) {
                   <SelectItem value="50">50</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => p - 1)}
-                disabled={!hasPrevPage}
-              >
-                Previous
-              </Button>
-
-              <span className="text-sm text-muted-foreground px-2">
-                Page {currentPage + 1} of {totalDisplayPages}
-              </span>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setCurrentPage((p) => p + 1)}
-                disabled={!hasNextPage}
-              >
-                Next
-              </Button>
             </div>
           </div>
         )}

@@ -9,7 +9,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <div className="min-h-screen bg-background">
-          <div className="absolute top-4 right-4">
+          <div className="absolute top-4 right-2">
             <ModeToggle />
           </div>
           <CodewarsSearch />

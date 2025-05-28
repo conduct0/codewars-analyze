@@ -18,7 +18,7 @@ import ActivityHeatmap from "./ActivityHeatmap";
 interface Rank {
   rank: number;
   name: string;
-  color: "white" | "yellow" | "blue" | "purple" | "black" | "red";
+  color: "white" | "blue" | "yellow" | "purple" | "black" | "red";
   score: number;
 }
 
@@ -63,8 +63,6 @@ async function getUserProfile(username: string): Promise<UserProfile> {
 function CodewarsSearch() {
   const [username, setUsername] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  // Get username from URL on component mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const urlUsername = urlParams.get("user");
@@ -75,7 +73,6 @@ function CodewarsSearch() {
     }
   }, []);
 
-  // Update URL when searchTerm changes
   useEffect(() => {
     if (searchTerm) {
       const url = new URL(window.location.href);
@@ -149,10 +146,10 @@ function CodewarsSearch() {
 
   return (
     <div className="min-h-screen ">
-      <div className="flex flex-col items-center justify-center min-h-screen px-4 py-8">
+      <div className="flex flex-col items-center justify-center min-h-screen p-1 md:px-4 md:py-8">
         <div className="max-w-4xl w-full text-center space-y-8">
           <div className="space-y-4">
-            <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-red-400 via-red-500 to-orange-500 bg-clip-text text-transparent drop-shadow-2xl">
+            <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-purple-300 to-purple-800 bg-clip-text text-transparent drop-shadow-2xl">
               Codewars Analyze
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 font-medium">
@@ -168,7 +165,7 @@ function CodewarsSearch() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="text-lg py-6 pl-8 pr-6 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="text-lg py-6 pl-8 pr-6 bg-white dark:bg-gray-800 border-purple-300 dark:border-purple-900 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 text-md">
                 @
@@ -177,7 +174,7 @@ function CodewarsSearch() {
             <Button
               onClick={handleSearch}
               size="icon"
-              className="p-6 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-red-500/25"
+              className="p-6 bg-gradient-to-r from-purple-500  to-purple-800  hover:from-purple-400 hover:to-purple-600 transition-all duration-200 shadow-lg hover:shadow-purple-500/25"
               disabled={isLoading}
             >
               <Search className="h-6 w-6" />
@@ -207,7 +204,7 @@ function CodewarsSearch() {
           )}
 
           {data && !isLoading && (
-            <div className="bg-white dark:bg-gray-800/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl p-8 shadow-xl">
+            <div className="bg-white dark:bg-gray-800/20 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl p-2 md:p-8 shadow-xl">
               <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
                 <div className="text-center md:text-left">
                   <h2 className="text-4xl font-bold mb-2 text-gray-900 dark:text-white">
@@ -230,26 +227,26 @@ function CodewarsSearch() {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-lg p-6 text-center">
+                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-lg p-6 text-center">
                   <CardContent className="flex justify-center flex-col items-center">
-                    <Trophy className="w-8 h-8 text-blue-500 dark:text-blue-400" />
-                    <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-1">
+                    <Trophy className="w-8 h-8 text-purple-500 dark:text-purple-400" />
+                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                       {data.leaderboardPosition
                         ? `#${data.leaderboardPosition.toLocaleString()}`
                         : "N/A"}
                     </div>
-                    <div className="text-blue-700 dark:text-blue-300/80 font-medium">
+                    <div className="text-purple-700 dark:text-purple-300/80 font-medium">
                       Global Rank
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-lg p-6 text-center text-yellow-500 dark:text-yellow-400">
+                <Card className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-lg p-6 text-center text-purple-500 dark:text-purple-400">
                   <CardContent className="flex justify-center flex-col items-center">
-                    <Star className="w-8 h-8 text-yellow-500 dark:text-yellow-400" />
-                    <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
+                    <Star className="w-8 h-8 text-purple-500 dark:text-purple-400" />
+                    <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1">
                       {data.honor?.toLocaleString() || 0}
                     </div>
-                    <div className="text-yellow-700 dark:text-yellow-300/80 font-medium">
+                    <div className="text-purple-700 dark:text-purple-300/80 font-medium">
                       Honor Points
                     </div>
                   </CardContent>
@@ -307,6 +304,8 @@ function CodewarsSearch() {
                 </Card>
               </div>
 
+              <ActivityHeatmap username={data.username} />
+
               {sortedLanguages.length > 0 && (
                 <div className="mt-6 bg-gray-50 dark:bg-gray-700/30 border border-gray-200 dark:border-gray-600/50 rounded-lg p-6">
                   <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
@@ -332,7 +331,6 @@ function CodewarsSearch() {
                   </div>
                 </div>
               )}
-              <ActivityHeatmap username={data.username} />
               <CompletedChallenges username={data.username} />
             </div>
           )}
