@@ -14,7 +14,7 @@ export interface ChallengesResponse {
 
 export async function fetchAllCompletedChallenges(
   username: string,
-): Promise<ChallengesResponse[]> {
+): Promise<ChallengesResponse> {
   if (!username || typeof username !== "string") {
     throw new Error("Username is required");
   }

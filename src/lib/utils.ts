@@ -1,86 +1,82 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import type { Challenge, ChallengesResponse } from "./services";
-import type {
-  HeatmapDataPoint,
-  HeatmapSeries,
-  YearStats,
-} from "@/components/ActivityHeatmap";
+import type { DayData } from "@/components/ActivityHeatmap";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-const MONTHS = [
-  "Jan",
-  "Feb",
-  "Mar",
-  "Apr",
-  "May",
-  "Jun",
-  "Jul",
-  "Aug",
-  "Sep",
-  "Oct",
-  "Nov",
-  "Dec",
-];
 
-// Helper functions
-export const processHeatmapData = (
+export const processDataForHeatmap = (
   year: number,
   challenges: Challenge[],
-): HeatmapSeries[] => {
+): DayData[][] => {
   if (!challenges?.length) return [];
 
   const activityMap = new Map<string, number>();
-  const startDate = new Date(year, 0, 1);
-  const endDate = new Date(year, 11, 31);
+  challenges.forEach((challenge) => {
+    const date = new Date(challenge.completedAt);
 
-  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    const dateStr = d.toISOString().split("T")[0];
-    activityMap.set(dateStr, 0);
+    if (date.getFullYear() === year) {
+      const dateString = date.toISOString().split("T")[0];
+      activityMap.set(dateString, (activityMap.get(dateString) || 0) + 1);
+    }
+  });
+
+  const months: DayData[][] = [];
+  for (let month = 0; month < 12; month++) {
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const monthData: DayData[] = [];
+
+    // We go over extra days to show them differently
+    for (let day = 1; day <= 31; day++) {
+      if (day <= daysInMonth) {
+        const date = new Date(year, month, day);
+        const dateString = date.toISOString().split("T")[0];
+
+        monthData.push({
+          date: dateString,
+          challenges: activityMap.get(dateString) || 0,
+          day,
+          month,
+        });
+      } else {
+        monthData.push({
+          date: "",
+          challenges: 0,
+          day,
+          month,
+        });
+      }
+    }
+    months.push(monthData);
   }
 
-  challenges.forEach((challenge) => {
-    const challengeDate = challenge.completedAt.split("T")[0];
-    if (challengeDate.startsWith(year.toString())) {
-      activityMap.set(challengeDate, (activityMap.get(challengeDate) || 0) + 1);
-    }
-  });
-
-  return MONTHS.map((month, monthIndex) => {
-    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
-    const monthData: HeatmapDataPoint[] = [];
-
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(year, monthIndex, day);
-      const dateStr = date.toISOString().split("T")[0];
-      const count = activityMap.get(dateStr) || 0;
-      monthData.push({ x: day, y: count });
-    }
-
-    return { name: month, data: monthData };
-  });
+  return months;
 };
-
 export const getAvailableYears = (
   challengesData: ChallengesResponse | undefined,
 ): number[] => {
   if (!challengesData?.data?.length) return [];
 
-  const years = new Set<number>();
+  let currentYear = new Date().getFullYear();
+  let startYear = currentYear;
   challengesData.data.forEach((challenge: Challenge) => {
     const year = new Date(challenge.completedAt).getFullYear();
-    years.add(year);
+    if (year < startYear) {
+      startYear = year;
+    }
   });
 
-  return Array.from(years).sort((a, b) => b - a);
+  return Array.from({ length: currentYear - startYear + 1 }).map(
+    (_, index) => startYear + index,
+  );
 };
 
 export const calculateYearStats = (
   challengesData: ChallengesResponse | undefined,
   selectedYear: number,
-): YearStats => {
+) => {
   if (!challengesData?.data?.length) return { total: 0, days: 0 };
 
   const yearChallenges = challengesData.data.filter((challenge: Challenge) =>
@@ -92,73 +88,45 @@ export const calculateYearStats = (
     uniqueDays.add(challenge.completedAt.split("T")[0]);
   });
 
+  const [longestStreak, longestStreakDates] =
+    calculateLongestStreak(uniqueDays);
   return {
     total: yearChallenges.length,
     days: uniqueDays.size,
+    longestStreak,
+    longestStreakDates,
   };
 };
 
-// --contribution-default-bgColor-0: #151b23;
-//     --contribution-default-bgColor-1: #033a16;
-//     --contribution-default-bgColor-2: #196c2e;
-//     --contribution-default-bgColor-3: #2ea043;
-//     --contribution-default-bgColor-4: #56d364;
-export const getColorRanges = (max: number, isDark: boolean) => {
-  if (isDark) {
-    return [
-      { from: 0, to: 0, color: "#151b23", name: "No activity" },
-      {
-        from: 1,
-        to: Math.ceil(max * 0.25) || 1,
-        color: "#033a16",
-        name: "Low",
-      },
-      {
-        from: Math.ceil(max * 0.25) + 1,
-        to: Math.ceil(max * 0.5) || 1,
-        color: "#196c2e",
-        name: "Medium",
-      },
-      {
-        from: Math.ceil(max * 0.5) + 1,
-        to: Math.ceil(max * 0.75) || 1,
-        color: "#2ea043",
-        name: "High",
-      },
-      {
-        from: Math.ceil(max * 0.75) + 1,
-        to: max || 1,
-        color: "#56d364",
-        name: "Very High",
-      },
-    ];
-  } else {
-    return [
-      { from: 0, to: 0, color: "#f1f5f9", name: "No activity" },
-      {
-        from: 1,
-        to: Math.ceil(max * 0.25) || 1,
-        color: "#a7f3d0",
-        name: "Low",
-      },
-      {
-        from: Math.ceil(max * 0.25) + 1,
-        to: Math.ceil(max * 0.5) || 1,
-        color: "#6ee7b7",
-        name: "Medium",
-      },
-      {
-        from: Math.ceil(max * 0.5) + 1,
-        to: Math.ceil(max * 0.75) || 1,
-        color: "#34d399",
-        name: "High",
-      },
-      {
-        from: Math.ceil(max * 0.75) + 1,
-        to: max || 1,
-        color: "#10b981",
-        name: "Very High",
-      },
-    ];
+function getDateStem(date: Date | undefined) {
+  if (!date) return;
+  return date.toISOString().split("T")[0];
+}
+function calculateLongestStreak(uniqueDays: Set<string>): [number, string[]] {
+  const dates = Array.from(uniqueDays).sort();
+  if (dates.length <= 1) return [dates.length, dates];
+
+  let longest = 1,
+    longestDates = [dates[0]];
+  let current = 1,
+    currentDates = [dates[0]];
+
+  for (let i = 1; i < dates.length; i++) {
+    const daysDiff =
+      (new Date(dates[i]).getTime() - new Date(dates[i - 1]).getTime()) /
+      (1000 * 60 * 60 * 24);
+
+    if (daysDiff === 1) {
+      currentDates.push(dates[i]);
+      if (++current > longest) {
+        longest = current;
+        longestDates = [...currentDates];
+      }
+    } else {
+      current = 1;
+      currentDates = [dates[i]];
+    }
   }
-};
+
+  return [longest, longestDates];
+}
