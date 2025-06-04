@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   fetchAllCompletedChallenges,
+  type Challenge,
   type ChallengesResponse,
 } from "@/lib/services";
 import { useTheme } from "@/components/ThemeProvider";
@@ -62,6 +63,19 @@ function ActivityHeatmap({ username }: ActivityHeatmapProps) {
     [selectedYear, challengesData?.data],
   );
 
+  const isRecentlyActive = useMemo(() => {
+    if (!challengesData?.data?.length) return false;
+
+    const today = new Date();
+    const threeDaysAgo = new Date(today);
+    threeDaysAgo.setDate(today.getDate() - 3);
+
+    return challengesData.data.some((challenge: Challenge) => {
+      const challengeDate = new Date(challenge.completedAt);
+      return challengeDate >= threeDaysAgo;
+    });
+  }, [challengesData?.data]);
+
   if (!username) {
     return (
       <EmptyState
@@ -102,10 +116,15 @@ function ActivityHeatmap({ username }: ActivityHeatmapProps) {
     <Card className="mt-6">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 ">
             <Activity className="w-5 h-5 text-purple-600" />
             Activity Heatmap
           </CardTitle>
+          {isRecentlyActive && (
+            <div className="text-sm font-semibold ">
+              🔥 Good work, keep it going!
+            </div>
+          )}
           <div className="flex items-center gap-2">
             <Button
               variant="outline"
@@ -139,15 +158,11 @@ function ActivityHeatmap({ username }: ActivityHeatmapProps) {
             </Button>
           </div>
         </div>
-        <div className="flex justify-start items-center gap-6 text-sm text-muted-foreground">
+        <div className="flex justify-center items-center gap-6 text-sm text-muted-foreground">
           <div className="flex items-center gap-6 text-sm text-muted-foreground">
             <span>{yearStats.total} challenges completed</span>
             <span>•</span>
-            <span>
-              <strong>
-                {yearStats.longestStreak} days is the longest streak!
-              </strong>
-            </span>
+            <span>{yearStats.longestStreak} days is the longest streak</span>
             <span>•</span>
             <span>{yearStats.days} active days</span>
           </div>
